@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>你的专属编号</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      text-align: center;
+      background-color: #f9f9f9;
+      padding: 50px;
+      overflow: hidden;
+      position: relative;
+    }
+    .number {
+      font-size: 72px;
+      color: #2c3e50;
+      margin: 20px 0;
+      z-index: 10;
+    }
+    .message {
+      font-size: 28px;
+      margin-top: 20px;
+      font-weight: bold;
+      z-index: 10;
+      position: relative;
+    }
+    .winner {
+      color: #e74c3c;
+    }
+    .loser {
+      color: #7f8c8d;
+    }
+    img {
+      max-width: 80%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 10;
+      position: relative;
+    }
+
+    .heart, .balloon, .confetti {
+      position: absolute;
+      z-index: 0;
+    }
+
+    .heart {
+      background-color: #ff4d88;
+      transform: rotate(45deg);
+    }
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      background-color: #ff4d88;
+      border-radius: 50%;
+    }
+    .heart::before {
+      top: -50%;
+      left: 0;
+    }
+    .heart::after {
+      left: -50%;
+      top: 0;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) rotate(45deg); opacity: 1; }
+      100% { transform: translateY(-600px) rotate(45deg); opacity: 0; }
+    }
+
+    @keyframes rise {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-700px); opacity: 0; }
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(700px) rotate(360deg); opacity: 0; }
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 恭喜你获得专属编号</h1>
+  <div class="number" id="code">---</div>
+  <div class="message" id="resultMessage">---</div>
+  <img src="https://your-image-link.com/image.jpg" alt="你的专属图片">
+
+  <!-- 🎵 背景音乐 -->
+  <audio autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2023/03/15/audio_306879b7c5.mp3?filename=happy-day-306879.mp3" type="audio/mpeg">
+    您的浏览器不支持音频播放。
+  </audio>
+
+  <!-- 🎵 音乐版权信息 -->
+  <footer>
+    Music by <a href="https://pixabay.com/users/desifreemusic-28163210/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=306879" target="_blank">Omar Faruque</a> from <a href="https://pixabay.com/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=306879" target="_blank">Pixabay</a>
+  </footer>
+
+  <script>
+    const luckyCodes = ['006', '008', '066', '088'];
+
+    function generateFinalCode() {
+      const usedCodes = JSON.parse(localStorage.getItem('usedCodes') || '[]');
+      let finalCode;
+      let attempts = 0;
+      do {
+        finalCode = Math.floor(Math.random() * 100 + 1).toString().padStart(3, '0');
+        attempts++;
+        if (attempts > 200) break;
+      } while (usedCodes.includes(finalCode));
+      usedCodes.push(finalCode);
+      localStorage.setItem('usedCodes', JSON.stringify(usedCodes));
+      return finalCode;
+    }
+
+    function animateCodeScroll(finalCode) {
+      const codeDisplay = document.getElementById('code');
+      const resultMessage = document.getElementById('resultMessage');
+      let speed = 50;
+      let count = 0;
+      const maxCount = 5; // 控制滚动次数，约 3 秒
+
+      function scrollStep() {
+        const tempCode = Math.floor(Math.random() * 100 + 1).toString().padStart(3, '0');
+        codeDisplay.textContent = tempCode;
+        count++;
+        speed += 10;
+        if (count < maxCount) {
+          setTimeout(scrollStep, speed);
+        } else {
+          codeDisplay.textContent = finalCode;
+          if (luckyCodes.includes(finalCode)) {
+            resultMessage.textContent = '🎁 靓仔/靓女，恭喜您中奖了！';
+            resultMessage.className = 'message winner';
+          } else {
+            resultMessage.textContent = '😢 很遗憾，您未中奖！';
+            resultMessage.className = 'message loser';
+          }
+        }
+      }
+
+      scrollStep();
+    }
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      const size = Math.floor(Math.random() * 20 + 10);
+      heart.style.width = size + 'px';
+      heart.style.height = size + 'px';
+      heart.style.left = Math.random() * window.innerWidth + 'px';
+      heart.style.top = window.innerHeight + 'px';
+      heart.style.transform = `rotate(${Math.random() * 360}deg)`;
+      heart.style.animation = `float ${Math.random() * 4 + 3}s linear`;
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 6000);
+    }
+
+    function createBalloon() {
+      const balloon = document.createElement('div');
+      balloon.className = 'balloon';
+      const size = Math.floor(Math.random() * 30 + 30);
+      balloon.style.width = size + 'px';
+      balloon.style.height = size * 1.2 + 'px';
+      balloon.style.left = Math.random() * window.innerWidth + 'px';
+      balloon.style.top = window.innerHeight + 'px';
+      balloon.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+      balloon.style.animation = `rise ${Math.random() * 3 + 5}s linear`;
+      document.body.appendChild(balloon);
+      setTimeout(() => balloon.remove(), 8000);
+    }
+
+    function createConfetti() {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.width = '8px';
+      confetti.style.height = '20px';
+      confetti.style.left = Math.random() * window.innerWidth + 'px';
+      confetti.style.top = '-20px';
+      confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 50%)`;
+      confetti.style.animation = `fall ${Math.random() * 2 + 3}s ease-in`;
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 5000);
+    }
+
+    const finalCode = generateFinalCode();
+    animateCodeScroll(finalCode);
+    setInterval(createHeart, 300);
+    setInterval(createBalloon, 1000);
+    setInterval(createConfetti, 500);
+  </script>
+</body>
+</html>
